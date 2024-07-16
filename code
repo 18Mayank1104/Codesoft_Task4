@@ -1,0 +1,228 @@
+//code of Library Management System 
+
+#include <bits/stdc++.h>
+#include <iostream>
+#include <string>
+#include <map>
+
+using namespace std;
+
+void library_mgmt();
+void display_books(const map<int, string>& book_database);
+void add_book(map<int, string>& book_database);
+void edit_book(map<int, string>& book_database);
+void delete_book(map<int, string>& book_database);
+void checkout_book(map<int, string>& book_database, int& borrow);
+void return_book(map<int, string>& book_database, int& borrow);
+void calculate_fine(int borrow);
+
+int main()
+{
+    int pass, option;
+    string uid;
+    map<string, int> login = {{"Mayank", 12345}, {"Virat", 6789}, {"Rohit", 2345}};
+    
+    cout << "-----------------------------------------------------------------------------\n";
+    cout << "---------------- WELCOME TO LIBRARY MANAGEMENT SYSTEM (LOGIN) ---------------\n";
+    cout << "-----------------------------------------------------------------------------\n";
+    cout << "1.>>> Login >>>\n2.>>> Exit  >>>\n\nEnter your choice : ";
+    cin >> option;
+
+    if (option == 1) {
+        cin.ignore();
+        cout << "Enter Your User-ID : ";
+        getline(cin, uid);
+        cout << "Enter Your Password : ";
+        cin >> pass;
+
+        if (login.count(uid) && pass == login[uid]) {
+            cout << "Redirected to main page...\n";
+            library_mgmt();
+        } else {
+            cout << "Invalid credentials...! Please Try Again...\n";
+            main();
+        }
+    } else if (option == 2) {
+        cout << "Thank you for using My Library Management Application...!\n";
+        exit(0);
+    } else {
+        cout << "Invalid choice...! Please try again...\n";
+        main();
+    }
+
+    return 0;
+}
+
+void library_mgmt() {
+    int choice, borrow = 0;
+    map<int, string> book_database = {
+        {1, "CSE :Data Structures and Algorithms in C++ by Adam Drozdek"}, {2, "CSE : Discrete Mathematics and Its Applications  by Kenneth H. Rosen"}, {3, "ECE : Electric Drive"},
+        {4, "ECE : Electronic Devices and Circuit Theory by Robert Boylestad and Louis Nashelsky"}, {5, "ECE :Linear Systems and Signals by B.P. Lathi"}, {6, "EE : Basic Electrical"},
+        {7, "EE : Power Electronics"}, {8, "ECE : Basic Electronics"}, {9, "ECE : Microprocessor & Microcontroller"},
+        {10, "ECE : Analog Electronics"}, {11, "ECE : Digital Electronics"}, {12, "CSE : C Programming"},
+        {13, "CSE : Java Programming"}, {14, "CSE : Artificial Intelligence"}, {15, "CSE : Object Oriented Programming (OOPs)"},
+        {16, "MECH : Engineering Mechanics: Statics and Dynamics by J.L. Meriam and L.G. Kraige"}, {17, "IT : Databases - Networks"}, {18, "IT : Statistics"},
+        {19, "ECE :Digital Logic and Computer Design by M. Morris Mano"}, {20, "ENG : How to Influence Friends and Peoples1"}, {21, "MATHS : Advanced Engineering Mathematics-1"},
+        {22, "MATHS :Advanced Engineering Mathematics-2"}, {23, "MATHS : Advanced Engineering Mathematics-3"}, {24, "PHYS : Physics"},
+        {25, "CHEM : Chemistry"}, {26, "ENG : English"}, {27, "BENG : Bengali"}, {28, "HIND : Hindi"},
+        {29, "EE : Control System"}, {30, "EE : Electrical Circuit Theory"}, {31, "EE : Electric & Hybrid Vehicle"},
+        {32, "ECE : Principles of Communication Systems by Herbert Taub and Donald Schilling"}
+    };
+
+    do {
+        cout << "\n------------------------- LIBRARY MANAGEMENT SYSTEM -------------------------\n";
+        cout << "1.>>> View a Book\n2.>>> View all Books\n3.>>> Add a New Book\n4.>>> Edit a Book\n5.>>> Delete a Book\n6.>>> Book Checkout\n7.>>> Book Return\n8.>>> Fine Count\n9.>>> Logout\n";
+        cout << "Select your choice : ";
+        cin >> choice;
+
+        switch (choice) {
+            case 1: {
+                int view_key;
+                cout << "Enter the Book Number to view the Book Details : ";
+                cin >> view_key;
+                if (book_database.find(view_key) != book_database.end()) {
+                    cout << view_key << " ---> " << book_database.at(view_key) << endl;
+                } else {
+                    cout << "Error.!!! This Book Number is not found...\n";
+                }
+                break;
+            }
+            case 2:
+                display_books(book_database);
+                break;
+            case 3:
+                add_book(book_database);
+                break;
+            case 4:
+                edit_book(book_database);
+                break;
+            case 5:
+                delete_book(book_database);
+                break;
+            case 6:
+                checkout_book(book_database, borrow);
+                break;
+            case 7:
+                return_book(book_database, borrow);
+                break;
+            case 8:
+                calculate_fine(borrow);
+                break;
+            case 9:
+                cout << "Redirected to homepage...\n";
+                main();
+                break;
+            default:
+                cout << "Invalid choice...! Please try again...\n";
+        }
+    } while (choice != 9);
+}
+
+void display_books(const map<int, string>& book_database) {
+    cout << "All Books --->\n";
+    for (const auto& x : book_database) {
+        cout << x.first << " ---> " << x.second << endl;
+    }
+}
+
+void add_book(map<int, string>& book_database) {
+    int key, question;
+    string val;
+    do {
+        cout << "Enter the Book Number : ";
+        cin >> key;
+        if (key <= 0 || book_database.count(key)) {
+            cout << "Invalid or existing Book Number. Try Again...\n";
+        } else {
+            cin.ignore();
+            cout << "Enter Your Book Details : ";
+            getline(cin, val);
+            book_database.insert({key, val});
+        }
+        cout << "Do you want to add more books? (1=Yes / 0=No) : ";
+        cin >> question;
+    } while (question);
+}
+
+void edit_book(map<int, string>& book_database) {
+    int edit_key;
+    string edit_val;
+    cout << "Enter the Book Number which one you want to edit : ";
+    cin >> edit_key;
+    if (book_database.count(edit_key)) {
+        cin.ignore();
+        cout << "Enter Your Edited Book Details : ";
+        getline(cin, edit_val);
+        book_database[edit_key] = edit_val;
+        cout << "Book No.-" << edit_key << " edited successfully...!\n";
+    } else {
+        cout << "Invalid Book Number...! Try Again...\n";
+    }
+}
+
+void delete_book(map<int, string>& book_database) {
+    int delete_key;
+    cout << "Enter the Book Number which one you want to remove/delete : ";
+    cin >> delete_key;
+    if (book_database.count(delete_key)) {
+        book_database.erase(delete_key);
+        cout << "Book No.-" << delete_key << " deleted/removed successfully...!\n";
+    } else {
+        cout << "Invalid Book Number...! Try Again...\n";
+    }
+}
+
+void checkout_book(map<int, string>& book_database, int& borrow) {
+    int issue_key;
+    cout << "Enter the Book Number which you want to borrow : ";
+    cin >> issue_key;
+    if (borrow == 0 && book_database.count(issue_key)) {
+        borrow = issue_key;
+        cout << "Book No.-" << issue_key << " ---> " << book_database.at(issue_key) << " borrowed Successfully...!\n";
+    } else if (borrow != 0) {
+        cout << "You have already borrowed a book... Please return that to borrow another book...\n";
+    } else {
+        cout << "This Book is not Available...\n";
+    }
+}
+
+void return_book(map<int, string>& book_database, int& borrow) {
+    if (borrow != 0) {
+        char ask;
+        cout << "Borrowed Book Details --->\n";
+        cout << "Book No.-" << borrow << "\nBook Details -- " << book_database.at(borrow) << endl;
+        cout << "Do you want to return that book? (y/n) : ";
+        cin >> ask;
+        if (ask == 'y' || ask == 'Y') {
+            cout << "The Book-" << borrow << " is returned Successfully...!\n";
+            borrow = 0;
+        } else {
+            cout << "The Book-" << borrow << " is not returned...\n";
+        }
+    } else {
+        cout << "You haven't borrowed any book till now.!\n";
+    }
+}
+
+void calculate_fine(int borrow) {
+    float fine_money = 0.00;
+    char time_m;
+    int time_d;
+
+    cout << "Fine will be imposed if the book is not returned after one month...\n";
+    cout << "After one month Rs.2.50/- fine will be imposed every day...\n";
+    if (borrow != 0) {
+        cout << "Is one month over after borrowing this book? (y/n) : ";
+        cin >> time_m;
+        if (time_m == 'y' || time_m == 'Y') {
+            cout << "How many days passed after one month free use? : ";
+            cin >> time_d;
+            float fine_amount = 2.50 * time_d;
+            cout << "Total Fine Amount till now is Rs.-" << fixed << setprecision(2) << fine_amount << "/- Only.\n";
+        } else {
+            cout << "Total Fine Amount till now is Rs.-" << fixed << setprecision(2) << fine_money << "/- Only.\n";
+        }
+    } else {
+        cout << "You haven't borrowed any book yet.!\n";
+    }
+}
